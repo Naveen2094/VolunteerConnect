@@ -1,0 +1,116 @@
+body {
+  background-color: #f8f9fa; 
+  margin: 0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Main App container */
+.App {
+  text-align: center;
+}
+
+/* Header section */
+.App-header {
+  background-color: #0d6efd; 
+  padding: 40px 20px;
+  color: white;
+}
+
+/* Link styling */
+.App-link {
+  color: #0d6efd;
+  text-decoration: none;
+}
+
+/* Buttons */
+button {
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+button:hover {
+  opacity: 0.9;
+}
+
+/* Headings */
+h1, h2, h3 {
+  font-weight: 600;
+}
+
+/* Registration form container */
+.form-container {
+  max-width: 500px;
+  margin: 40px auto;
+  padding: 30px;
+  background-color: #ffffff;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Form elements spacing */
+.form-container input,
+.form-container textarea {
+  margin-bottom: 15px;
+}
+
+/* Admin table container */
+.table-container {
+  margin-top: 30px;
+  padding: 20px;
+  background: #fff;
+  border-radius: 10px;
+}
+
+.table-responsive {
+  overflow-x: auto;
+}
+
+.form-container {
+  max-width: 500px;
+  margin: auto;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fade-in-up {
+  animation: fadeInUp 0.8s ease forwards;
+}
+
+/* Hover animation on card */
+.card-hover {
+  transition: all 0.3s ease-in-out;
+}
+.card-hover:hover {
+  transform: translateY(-10px) scale(1.02);
+  box-shadow: 0 0 25px rgba(0, 123, 255, 0.3);
+  background-color: #495057;
+}
+
+/* Active navbar link */
+.navbar-nav .nav-link.active-link {
+  border-bottom: 2px solid #0d6efd;
+}
+
+.modal-content {
+  border: 1px solid #0d6efd;
+  box-shadow: 0 0 20px rgba(13, 110, 253, 0.4);
+}
+.modal-header, .modal-footer {
+  background-color: #1c1f23;
+}
+
+.modal-body img {
+  transition: transform 0.3s ease;
+}
+.modal-body img:hover {
+  transform: scale(1.03);
+}
