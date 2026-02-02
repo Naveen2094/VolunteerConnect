@@ -6,6 +6,9 @@ import { Link, useLocation } from "react-router-dom";
 
 const Home = () => {
   const location = useLocation();
+  const name = localStorage.getItem("name");
+  const role = localStorage.getItem("role");
+
 
   return (
     <div className="d-flex flex-column min-vh-100 bg-dark text-white" style={{ fontFamily: 'Inter, "Noto Sans", sans-serif' }}>
@@ -27,31 +30,94 @@ const Home = () => {
 
           <div className="collapse navbar-collapse justify-content-end" id="navbarNav">
             <ul className="navbar-nav align-items-center gap-md-3">
-              <li className="nav-item">
-                <Link className={`nav-link text-white fw-medium ${location.pathname === "/" ? "active-link" : ""}`} to="/">
-                  Home
-                </Link>
-              </li>
-              <li className="nav-item">
-                <Link className={`nav-link text-white fw-medium ${location.pathname === "/about" ? "active-link" : ""}`} to="/about">
-                  About
-                </Link>
-              </li>
-              <li className="nav-item">
-                <Link className={`nav-link text-white fw-medium ${location.pathname === "/programs" ? "active-link" : ""}`} to="/programs">
-                  Programs
-                </Link>
-              </li>
-              <li className="nav-item">
-                <Link className={`nav-link text-white fw-medium ${location.pathname === "/contact" ? "active-link" : ""}`} to="/contact">
-                  Contact
-                </Link>
-              </li>
-              <li className="nav-item mt-2 mt-md-0">
-                              <Link to="/apply" className="btn btn-outline-light fw-bold px-4">
-                                Apply Now
-                              </Link> </li>
-            </ul>
+  <li className="nav-item">
+    <Link className={`nav-link text-white fw-medium ${location.pathname === "/" ? "active-link" : ""}`} to="/">
+      Home
+    </Link>
+  </li>
+
+  <li className="nav-item">
+    <Link className={`nav-link text-white fw-medium ${location.pathname === "/about" ? "active-link" : ""}`} to="/about">
+      About
+    </Link>
+  </li>
+
+  <li className="nav-item">
+    <Link className={`nav-link text-white fw-medium ${location.pathname === "/programs" ? "active-link" : ""}`} to="/programs">
+      Programs
+    </Link>
+  </li>
+
+  <li className="nav-item">
+    <Link className={`nav-link text-white fw-medium ${location.pathname === "/contact" ? "active-link" : ""}`} to="/contact">
+      Contact
+    </Link>
+  </li>
+
+  {/* 🔐 NOT LOGGED IN */}
+  {!role && (
+    <>
+      <li className="nav-item">
+        <Link className="nav-link text-white fw-medium" to="/login">
+          <i className="bi bi-person-circle me-1"></i>
+          Login
+        </Link>
+      </li>
+
+      <li className="nav-item">
+        <Link className="nav-link text-white fw-medium" to="/register">
+          <i className="bi bi-person-plus me-1"></i>
+          Register
+        </Link>
+      </li>
+    </>
+  )}
+
+  {/* ✅ LOGGED IN USER */}
+  {role && (
+  <>
+    {/* POST PROGRAM */}
+    <li className="nav-item">
+      <Link className="nav-link text-white fw-medium" to="/create-program">
+        <i className="bi bi-plus-circle me-1"></i>
+        Post Program
+      </Link>
+    </li>
+
+    {/* USER NAME */}
+    <li className="nav-item d-flex align-items-center text-white fw-medium">
+      <i className="bi bi-person-check me-2"></i>
+      {name}
+    </li>
+
+    {/* ADMIN DASHBOARD */}
+    {role === "admin" && (
+      <li className="nav-item">
+        <Link className="nav-link text-white fw-medium" to="/admin">
+          <i className="bi bi-shield-lock me-1"></i>
+          Admin Dashboard
+        </Link>
+      </li>
+    )}
+
+    {/* LOGOUT */}
+    <li className="nav-item ms-2">
+      <button
+        className="btn btn-outline-light fw-bold px-3"
+        onClick={() => {
+          localStorage.clear();
+          window.location.href = "/";
+        }}
+      >
+        <i className="bi bi-box-arrow-right me-1"></i>
+        Logout
+      </button>
+    </li>
+  </>
+)}
+
+</ul>
+
             
           </div>
         </nav>
