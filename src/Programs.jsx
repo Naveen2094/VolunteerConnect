@@ -6,233 +6,214 @@ import { Link, useLocation } from "react-router-dom";
 const Programs = () => {
   const location = useLocation();
   const [selectedProgram, setSelectedProgram] = useState(null);
+  const [programs, setPrograms] = useState([]);
 
-  const programs = [
-    {
-      title: "Environmental Conservation Internship",
-      shortDesc:
-        "Join our team to protect and restore natural habitats. Gain hands-on experience in conservation efforts.",
-      longDesc:
-        "This program offers real-world conservation work involving wildlife protection, sustainable land use, reforestation, and biodiversity preservation. Interns will work alongside experienced environmentalists in rural and urban settings.",
-      image:
-        "https://lh3.googleusercontent.com/aida-public/AB6AXuDFanWs0kDlN-IuTBbN3zHTEV7UrWWRunYyx4MNR6G6LjnRcEe8Std447Kr3DO5uM8SYCPyFvWm43b5r7LoZ0Qf0Oihp9kpEcJ8T7LrZlIlzhezY_vB2nEfr9eJDcWBYA97pTCbMtnvko-CsFYfJLjr2VIkDk-ZP3Tf2maX27MD55ii1cHZ7ZdFm8xNY0Oa1J8nGBV7B0HJa4BUgo5XxNeW0FJh27tKXXocVb9307WAZTodUOPS8gYLybSfNCs2BMVG0pEInyN4bkQ",
-    },
-    {
-      title: "Community Development Volunteer Program",
-      shortDesc:
-        "Work directly with local communities to support education, health, and economic development initiatives.",
-      longDesc:
-        "Volunteers will assist in organizing workshops, teaching children, running awareness campaigns, and developing small-scale infrastructure for underprivileged areas.",
-      image:
-        "https://lh3.googleusercontent.com/aida-public/AB6AXuARbckODZ2uwyZPJOvzjm4JYaCLwPRFPbkOlc8GaIxyRy2EYCt-nnLPR3Z-R2SoTw8w-RQQj_RAEXUhoa6laShopi8OB5OWRAGumgmaGAqBeLhe1238A_cm_aKESNHamr_04_LOlJigsSisRrPPb11QcSZG9RrN2mUeljOD-z1qvLmAkk7GHS9xJyfbiiCMCnJip_FmDH4kZzw-Bk1HiviETQzyKy1fzITKiUe_NLlY2khOjWMXVupPzE5n3shDh_MHU8CFPLTBLUs",
-    },
-    {
-      title: "Healthcare Support Internship",
-      shortDesc:
-        "Assist healthcare professionals in various settings, gaining insights into the medical field and patient care.",
-      longDesc:
-        "Interns shadow doctors and nurses in clinics and hospitals, help with patient records, and support outreach health camps in underserved areas.",
-      image:
-        "https://lh3.googleusercontent.com/aida-public/AB6AXuB5q02Mu20Mj0Z_8m3oM7KnCrO2OQg2jA00U1wy0vHlMFB3m7n0msW9pjp-Y3PPZ10rAbd-EH4bw_8QqCb_YBJPfmKkmjQb0mkRPlspZhcepZDN_h6hE9fdGqvNwpWMzzpyKQbHU3TDHe84eqtkPfGkGDUOxwY_yK0m7NDn4maQzRO-0BUT311YCbnbqMu6EJj7TEjbiXMXAuxs-Krk40Ck_ixwHmdjOusldBF125qhVq2ueVCogH5pN7Xs891zxHmc70imInLsBJE",
-    },
-  ];
+  const name = localStorage.getItem("name");
+  const role = localStorage.getItem("role");
 
+  // Fetch programs
+  useEffect(() => {
+    fetch("http://localhost:5000/api/program")
+      .then((res) => res.json())
+      .then((data) => setPrograms(data))
+      .catch((err) => console.error("Error fetching programs:", err));
+  }, []);
+
+  // Delete program (ADMIN)
+  const handleDelete = async (id) => {
+    if (!window.confirm("Are you sure you want to delete this program?")) return;
+
+    const res = await fetch(
+      `http://localhost:5000/api/program/delete/${id}`,
+      { method: "DELETE" }
+    );
+
+    const data = await res.json();
+    alert(data.message);
+    setPrograms(programs.filter((p) => p._id !== id));
+  };
+
+  // Modal logic
   useEffect(() => {
     if (selectedProgram) {
-      const modalElement = document.getElementById("programModal");
-      if (modalElement) {
-        const modal = new bootstrap.Modal(modalElement);
-        modal.show();
-
-        return () => {
-          modal.hide();
-        };
-      }
+      const modal = new bootstrap.Modal(
+        document.getElementById("programModal")
+      );
+      modal.show();
+      return () => modal.hide();
     }
   }, [selectedProgram]);
 
   return (
-    <div
-      className="d-flex flex-column min-vh-100 bg-dark text-white"
-      style={{ fontFamily: 'Inter, "Noto Sans", sans-serif' }}
-    >
-      {/* Navbar */}
+    <div className="d-flex flex-column min-vh-100 bg-dark text-white" style={{ fontFamily: 'Inter, "Noto Sans", sans-serif' }}>
+      
+      {/* ================= NAVBAR ================= */}
       <header className="border-bottom border-secondary bg-dark">
         <nav className="navbar navbar-expand-md navbar-dark container px-3">
-          <Link to="/" className="navbar-brand d-flex align-items-center gap-2">
-            <div style={{ width: 40, height: 40 }}>
-              <svg
-                viewBox="0 0 48 48"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-                className="text-white"
-              >
-                <path
-                  d="M4 42.4379C4 42.4379 14.0962 36.0744 24 41.1692C35.0664 46.8624 44 42.2078 44 42.2078L44 7.01134C44 7.01134 35.068 11.6577 24.0031 5.96913C14.0971 0.876274 4 7.27094 4 7.27094L4 42.4379Z"
-                  fill="currentColor"
-                />
-              </svg>
-            </div>
-            <span className="fw-bold fs-4">VolunteerConnect</span>
+          <Link to="/" className="navbar-brand fw-bold fs-4 text-white">
+            VolunteerConnect
           </Link>
 
           <button
             className="navbar-toggler"
-            type="button"
             data-bs-toggle="collapse"
             data-bs-target="#navbarNav"
-            aria-controls="navbarNav"
-            aria-expanded="false"
-            aria-label="Toggle navigation"
           >
             <span className="navbar-toggler-icon"></span>
           </button>
 
           <div className="collapse navbar-collapse justify-content-end" id="navbarNav">
             <ul className="navbar-nav align-items-center gap-md-3">
+              
               <li className="nav-item">
-                <Link
-                  to="/"
-                  className={`nav-link text-white fw-medium ${
-                    location.pathname === "/" ? "active" : ""
-                  }`}
-                >
-                  Home
-                </Link>
+                <Link className={`nav-link ${location.pathname === "/" ? "active-link" : ""}`} to="/">Home</Link>
               </li>
+
               <li className="nav-item">
-                <Link
-                  to="/about"
-                  className={`nav-link text-white fw-medium ${
-                    location.pathname === "/about" ? "active" : ""
-                  }`}
-                >
-                  About
-                </Link>
-              </li>
-              <li className="nav-item">
-                <Link
-                  to="/programs"
-                  className={`nav-link text-white fw-medium ${
-                    location.pathname === "/programs" ? "active" : ""
-                  }`}
-                >
+                <Link className={`nav-link ${location.pathname === "/programs" ? "active-link" : ""}`} to="/programs">
                   Programs
                 </Link>
               </li>
+
               <li className="nav-item">
-                <Link to="/contact" className="nav-link text-white fw-medium">
-                  Contact
-                </Link>
+                <Link className="nav-link" to="/contact">Contact</Link>
               </li>
-              <li className="nav-item mt-2 mt-md-0">
-                <Link to="/apply" className="btn btn-outline-light fw-bold px-4">
-                  Apply Now
-                </Link>
-              </li>
+
+              {/* NOT LOGGED IN */}
+              {!role && (
+                <>
+                  <li className="nav-item">
+                    <Link className="nav-link" to="/login">
+                      <i className="bi bi-person-circle me-1"></i>Login
+                    </Link>
+                  </li>
+                  <li className="nav-item">
+                    <Link className="nav-link" to="/register">
+                      <i className="bi bi-person-plus me-1"></i>Register
+                    </Link>
+                  </li>
+                </>
+              )}
+
+              {/* LOGGED IN */}
+              {role && (
+  <>
+    <li className="nav-item">
+      <Link className="nav-link" to="/create-program">
+        <i className="bi bi-plus-circle me-1"></i>
+        Post Program
+      </Link>
+    </li>
+
+    <li className="nav-item d-flex align-items-center text-white">
+      <i className="bi bi-person-check me-2"></i>
+      {name}
+    </li>
+
+    {role === "admin" && (
+      <li className="nav-item">
+        <Link className="nav-link text-white fw-medium" to="/admin">
+          <i className="bi bi-shield-lock me-1"></i>
+          Admin Dashboard
+        </Link>
+      </li>
+    )}
+
+    <li className="nav-item">
+      <button
+        className="btn btn-outline-light btn-sm"
+        onClick={() => {
+          localStorage.clear();
+          window.location.href = "/";
+        }}
+      >
+        <i className="bi bi-box-arrow-right me-1"></i>
+        Logout
+      </button>
+    </li>
+  </>
+)}
+
             </ul>
           </div>
         </nav>
       </header>
 
-      {/* Program Section */}
+      {/* ================= PROGRAM LIST ================= */}
       <main className="container py-5 flex-grow-1">
         <div className="text-center mb-5">
           <h1 className="fw-bold">Internship and Volunteer Programs</h1>
           <p className="text-secondary">
-            Explore programs designed to provide experience and contribute to meaningful causes.
+            Explore verified programs and contribute to meaningful causes.
           </p>
         </div>
 
         <div className="row g-4">
-          {programs.map((program, index) => (
-            <div key={index} className="col-12">
+          {programs.map((program) => (
+            <div key={program._id} className="col-12">
               <div className="d-flex flex-column flex-md-row bg-secondary rounded-4 overflow-hidden shadow">
+
                 <div className="p-4 flex-grow-1">
                   <h5 className="fw-bold">{program.title}</h5>
                   <p className="text-light">{program.shortDesc}</p>
-                  <button
-                    className="btn btn-dark btn-sm"
-                    onClick={() => setSelectedProgram(program)}
-                  >
-                    View Details
-                  </button>
+
+                  <div className="d-flex gap-2">
+                    <button
+                      className="btn btn-dark btn-sm"
+                      onClick={() => setSelectedProgram(program)}
+                    >
+                      View Details
+                    </button>
+
+                    {role === "admin" && (
+                      <button
+                        className="btn btn-danger btn-sm"
+                        onClick={() => handleDelete(program._id)}
+                      >
+                        Delete
+                      </button>
+                    )}
+                  </div>
                 </div>
-                <div
-                  className="flex-grow-1"
-                  style={{
-                    minHeight: "200px",
-                    backgroundImage: `url(${program.image})`,
-                    backgroundSize: "cover",
-                    backgroundPosition: "center",
-                  }}
-                ></div>
+
+                <div className="col-md-4 p-0">
+                  <img
+                    src={`http://localhost:5000/uploads/programs/${program.image}`}
+                    alt={program.title}
+                    className="img-fluid h-100 w-100"
+                    style={{ objectFit: "cover" }}
+                  />
+                </div>
+
               </div>
             </div>
           ))}
         </div>
       </main>
 
-      {/* Bootstrap Modal */}
-      <div
-        className="modal fade"
-        id="programModal"
-        tabIndex="-1"
-        aria-labelledby="programModalLabel"
-        aria-hidden="true"
-      >
+      {/* ================= MODAL ================= */}
+      <div className="modal fade" id="programModal" tabIndex="-1">
         <div className="modal-dialog modal-lg modal-dialog-centered">
           <div className="modal-content bg-dark text-white">
             <div className="modal-header border-secondary">
-              <h5 className="modal-title" id="programModalLabel">
-                {selectedProgram?.title}
-              </h5>
-              <button
-                type="button"
-                className="btn-close btn-close-white"
-                data-bs-dismiss="modal"
-                aria-label="Close"
-                onClick={() => setSelectedProgram(null)}
-              ></button>
+              <h5 className="modal-title">{selectedProgram?.title}</h5>
+              <button className="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
             <div className="modal-body">
               <img
-                src={selectedProgram?.image}
-                alt={selectedProgram?.title}
+                src={`http://localhost:5000/uploads/programs/${selectedProgram?.image}`}
                 className="img-fluid rounded mb-3"
+                alt=""
               />
               <p>{selectedProgram?.longDesc}</p>
-            </div>
-            <div className="modal-footer border-secondary">
-              <button
-                type="button"
-                className="btn btn-outline-light"
-                data-bs-dismiss="modal"
-                onClick={() => setSelectedProgram(null)}
-              >
-                Close
-              </button>
-              <Link to="/apply" className="btn btn-primary" onClick={() => setSelectedProgram(null)}>
-                Apply Now
-              </Link>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Footer */}
+      {/* ================= FOOTER ================= */}
       <footer className="text-center text-secondary py-4 mt-auto">
-        <div className="d-flex flex-wrap justify-content-center gap-3 mb-3">
-          <a href="#" className="text-secondary text-decoration-none">Privacy Policy</a>
-          <a href="#" className="text-secondary text-decoration-none">Terms of Service</a>
-          <Link to="/contact" className="text-secondary text-decoration-none">Contact Us</Link>
-        </div>
-        <div className="d-flex justify-content-center gap-4 mb-3">
-          <a href="#" className="text-secondary" aria-label="Twitter">🐦</a>
-          <a href="#" className="text-secondary" aria-label="Facebook">📘</a>
-          <a href="#" className="text-secondary" aria-label="Instagram">📸</a>
-        </div>
-        <div>© 2025 VolunteerConnect. All rights reserved.</div>
+        © 2025 VolunteerConnect. All rights reserved.
       </footer>
     </div>
   );
