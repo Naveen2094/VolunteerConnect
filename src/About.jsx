@@ -11,55 +11,91 @@ const About = () => {
   return (
     <div className="d-flex flex-column min-vh-100 bg-dark text-white" style={{ fontFamily: 'Inter, "Noto Sans", sans-serif' }}>
       {/* Header */}
-      <header className="border-bottom border-secondary bg-dark">
-        <nav className="navbar navbar-expand-md navbar-dark container px-3">
-          <Link to="/" className="navbar-brand d-flex align-items-center gap-2 text-white text-decoration-none">
-            <div style={{ width: 40, height: 40 }}>
-              <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" className="text-white">
-                <path
-                  d="M4 42.4379C4 42.4379 14.0962 36.0744 24 41.1692C35.0664 46.8624 44 42.2078 44 42.2078L44 7.01134C44 7.01134 35.068 11.6577 24.0031 5.96913C14.0971 0.876274 4 7.27094 4 7.27094L4 42.4379Z"
-                  fill="currentColor"
-                />
-              </svg>
-            </div>
-            <span className="fw-bold fs-4">VolunteerConnect</span>
+      {/* NAVBAR */}
+<header className="border-bottom border-secondary bg-dark">
+  <nav className="navbar navbar-expand-md navbar-dark container px-3">
+    {/* Brand */}
+    <Link to="/" className="navbar-brand fw-bold fs-4 text-white">
+      VolunteerConnect
+    </Link>
+
+    <button
+      className="navbar-toggler"
+      type="button"
+      data-bs-toggle="collapse"
+      data-bs-target="#navbarNav"
+    >
+      <span className="navbar-toggler-icon"></span>
+    </button>
+
+    <div className="collapse navbar-collapse justify-content-end" id="navbarNav">
+      <ul className="navbar-nav align-items-center gap-md-3">
+        {/* Common Links */}
+        <li className="nav-item">
+          <Link className="nav-link text-white fw-medium" to="/">
+            Home
           </Link>
+        </li>
 
-          <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-            <span className="navbar-toggler-icon"></span>
-          </button>
+        <li className="nav-item">
+          <Link className="nav-link text-white fw-medium" to="/programs">
+            Programs
+          </Link>
+        </li>
 
-          <div className="collapse navbar-collapse justify-content-end" id="navbarNav">
-            <ul className="navbar-nav align-items-center gap-md-3">
-  <li className="nav-item">
-    <Link className={`nav-link text-white fw-medium ${location.pathname === "/" ? "active-link" : ""}`} to="/">
-      Home
-    </Link>
-  </li>
-  <li className="nav-item">
-    <Link className={`nav-link text-white fw-medium ${location.pathname === "/about" ? "active-link" : ""}`} to="/about">
-      About
-    </Link>
-  </li>
-  <li className="nav-item">
-    <Link className={`nav-link text-white fw-medium ${location.pathname === "/programs" ? "active-link" : ""}`} to="/programs">
-      Programs
-    </Link>
-  </li>
-  <li className="nav-item">
-    <Link className={`nav-link text-white fw-medium ${location.pathname === "/contact" ? "active-link" : ""}`} to="/contact">
-      Contact
-    </Link>
-  </li>
-  <li className="nav-item mt-2 mt-md-0">
-                  <Link to="/apply" className="btn btn-outline-light fw-bold px-4">
-                    Apply Now
-                  </Link> </li>
-</ul>
+        <li className="nav-item">
+          <Link className="nav-link text-white fw-medium" to="/contact">
+            Contact
+          </Link>
+        </li>
 
-          </div>
-        </nav>
-      </header>
+        {/* AUTH SECTION */}
+        {!localStorage.getItem("role") && (
+          <>
+            <li className="nav-item">
+              <Link className="nav-link text-white fw-medium" to="/login">
+                <i className="bi bi-person-circle me-1"></i>
+                Login
+              </Link>
+            </li>
+
+            <li className="nav-item">
+              <Link className="nav-link text-white fw-medium" to="/register">
+                <i className="bi bi-person-plus me-1"></i>
+                Register
+              </Link>
+            </li>
+          </>
+        )}
+
+        {localStorage.getItem("role") && (
+          <>
+            <li className="nav-item d-flex align-items-center text-white fw-medium">
+              <i className="bi bi-person-check me-2"></i>
+              {localStorage.getItem("name")}
+              {localStorage.getItem("role") === "admin" && (
+                <span className="badge bg-danger ms-2">ADMIN</span>
+              )}
+            </li>
+
+            <li className="nav-item">
+              <button
+                className="btn btn-outline-light fw-bold px-3"
+                onClick={() => {
+                  localStorage.clear();
+                  window.location.href = "/";
+                }}
+              >
+                <i className="bi bi-box-arrow-right me-1"></i>
+                Logout
+              </button>
+            </li>
+          </>
+        )}
+      </ul>
+    </div>
+  </nav>
+</header>
 
       {/* Hero Section */}
       <main
