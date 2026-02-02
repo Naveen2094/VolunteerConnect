@@ -1,10 +1,21 @@
-import React, { useState } from "react";
-import { Link, useLocation } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { Link, useLocation, useNavigate} from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.bundle.min.js";
 
 const Apply = () => {
   const location = useLocation();
+  const navigate = useNavigate();
+
+useEffect(() => {
+  const role = localStorage.getItem("role");
+
+  if (!role) {
+    alert("Please login to apply");
+    navigate("/login");
+  }
+}, [navigate]);
+
 
   // Form state
   const [formData, setFormData] = useState({
