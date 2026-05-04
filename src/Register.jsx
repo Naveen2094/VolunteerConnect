@@ -1,6 +1,9 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import "bootstrap/dist/css/bootstrap.min.css";
+import registerVolunteer from "./assets/register-volunteer.png";
+import AuthSplitLayout from "./components/AuthSplitLayout";
+import SiteFooter from "./components/SiteFooter";
+import SiteNavbar from "./components/SiteNavbar";
 
 const Register = () => {
   const navigate = useNavigate();
@@ -13,16 +16,13 @@ const Register = () => {
     e.preventDefault();
 
     try {
-      const response = await fetch(
-        "http://localhost:5000/api/auth/register",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ name, phone, password }),
-        }
-      );
+      const response = await fetch("http://localhost:5000/api/auth/register", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ name, phone, password }),
+      });
 
       const data = await response.json();
 
@@ -40,71 +40,65 @@ const Register = () => {
   };
 
   return (
-    <div
-      className="d-flex justify-content-center align-items-center min-vh-100 text-white"
-      style={{
-        background:
-          'linear-gradient(rgba(0,0,0,0.75), rgba(0,0,0,0.85)), url("https://st4.depositphotos.com/16122460/29031/i/450/depositphotos_290310662-stock-photo-team-of-volunteers-in-uniform.jpg")',
-        backgroundSize: "cover",
-        backgroundPosition: "center",
-        fontFamily: 'Inter, "Noto Sans", sans-serif',
-      }}
-    >
-      <div
-        className="bg-dark border border-secondary rounded-4 p-4 shadow-lg"
-        style={{ width: "420px" }}
-      >
-        <h2 className="text-center fw-bold mb-2">Create Account</h2>
-        <p className="text-center text-secondary mb-4">
-          Join VolunteerConnect and make a difference
-        </p>
+    <div className="page-shell">
+      <SiteNavbar />
 
-        <form onSubmit={handleRegister}>
-          <div className="mb-3">
-            <label className="form-label text-light">Full Name</label>
-            <input
-              type="text"
-              className="form-control bg-secondary text-white border-0"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              required
-            />
-          </div>
+      <main className="flex-grow-1">
+        <AuthSplitLayout
+          image={registerVolunteer}
+          imageClassName="register-image"
+          title="Join VolunteerConnect"
+          subtitle="Sign up to discover volunteer roles, internship opportunities, and verified community programs."
+        >
+          <form onSubmit={handleRegister}>
+            <div className="mb-3">
+              <label className="form-label fw-semibold">Full Name</label>
+              <input
+                type="text"
+                className="form-control site-input"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                required
+              />
+            </div>
 
-          <div className="mb-3">
-            <label className="form-label text-light">Phone Number</label>
-            <input
-              type="text"
-              className="form-control bg-secondary text-white border-0"
-              value={phone}
-              onChange={(e) => setPhone(e.target.value)}
-              required
-            />
-          </div>
+            <div className="mb-3">
+              <label className="form-label fw-semibold">Phone Number</label>
+              <input
+                type="text"
+                className="form-control site-input"
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
+                required
+              />
+            </div>
 
-          <div className="mb-3">
-            <label className="form-label text-light">Password</label>
-            <input
-              type="password"
-              className="form-control bg-secondary text-white border-0"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-            />
-          </div>
+            <div className="mb-3">
+              <label className="form-label fw-semibold">Password</label>
+              <input
+                type="password"
+                className="form-control site-input"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+              />
+            </div>
 
-          <button type="submit" className="btn btn-primary w-100 fw-bold mt-2">
-            Register
-          </button>
+            <button type="submit" className="btn btn-primary site-button w-100 mt-3">
+              Register
+            </button>
           </form>
 
-        <div className="text-center mt-3">
-          <span className="text-secondary">Already have an account?</span>{" "}
-          <Link to="/login" className="text-info text-decoration-none fw-medium">
-            Login
-          </Link>
-        </div>
-      </div>
+          <div className="text-center mt-4">
+            <span className="muted-text">Already have an account? </span>
+            <Link to="/login" className="auth-link">
+              Login
+            </Link>
+          </div>
+        </AuthSplitLayout>
+      </main>
+
+      <SiteFooter />
     </div>
   );
 };
