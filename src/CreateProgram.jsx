@@ -1,34 +1,44 @@
 import React, { useState } from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
-import "bootstrap/dist/css/bootstrap.min.css";
-import "bootstrap/dist/js/bootstrap.bundle.min.js";
+import { useNavigate } from "react-router-dom";
+import SiteNavbar from "./components/SiteNavbar";
+import SiteFooter from "./components/SiteFooter";
+import { PROGRAM_CATEGORIES } from "./utils/programMeta";
 
 const CreateProgram = () => {
-  const location = useLocation();
   const navigate = useNavigate();
-
-  const name = localStorage.getItem("name");
-  const role = localStorage.getItem("role");
 
   const [title, setTitle] = useState("");
   const [shortDesc, setShortDesc] = useState("");
-  const [longDesc, setLongDesc] = useState("");
+  const [category, setCategory] = useState(PROGRAM_CATEGORIES[0]);
+  const [location, setLocation] = useState("");
+  const [requiredVolunteers, setRequiredVolunteers] = useState("");
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
+  const [startTime, setStartTime] = useState("");
+  const [endTime, setEndTime] = useState("");
   const [image, setImage] = useState(null);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!title || !shortDesc || !longDesc || !image) {
-      alert("Please fill all fields");
+    if (!title || !shortDesc || !category || !location || !requiredVolunteers || !startDate || !startTime || !image) {
+      alert("Please fill all required fields");
       return;
     }
 
     const formData = new FormData();
+
     formData.append("title", title);
     formData.append("shortDesc", shortDesc);
-    formData.append("longDesc", longDesc);
+    formData.append("category", category);
+    formData.append("location", location);
+    formData.append("requiredVolunteers", requiredVolunteers);
+    formData.append("startDate", startDate);
+    formData.append("endDate", endDate);
+    formData.append("startTime", startTime);
+    formData.append("endTime", endTime);
+    formData.append("createdBy", localStorage.getItem("name"));
     formData.append("image", image);
-    formData.append("createdBy", name);
 
     try {
       const res = await fetch("http://localhost:5000/api/program/create", {
@@ -51,125 +61,160 @@ const CreateProgram = () => {
   };
 
   return (
-    <div
-      className="d-flex flex-column min-vh-100 bg-dark text-white"
-      style={{ fontFamily: 'Inter, "Noto Sans", sans-serif' }}
-    >
-      {/* 🔹 NAVBAR */}
-      <header className="border-bottom border-secondary bg-dark">
-        <nav className="navbar navbar-expand-md navbar-dark container px-3">
-          <Link to="/" className="navbar-brand fw-bold fs-4 text-white">
-            VolunteerConnect
-          </Link>
+    <div className="page-shell">
+      <SiteNavbar />
 
-          <button
-            className="navbar-toggler"
-            type="button"
-            data-bs-toggle="collapse"
-            data-bs-target="#navbarNav"
-          >
-            <span className="navbar-toggler-icon"></span>
-          </button>
-
-          <div className="collapse navbar-collapse justify-content-end" id="navbarNav">
-            <ul className="navbar-nav align-items-center gap-md-3">
-              <li className="nav-item">
-                <Link className="nav-link text-white" to="/">Home</Link>
-              </li>
-
-              <li className="nav-item">
-                <Link className="nav-link text-white" to="/programs">Programs</Link>
-              </li>
-
-              {role && (
-                <li className="nav-item d-flex align-items-center text-white fw-medium">
-                  <i className="bi bi-person-check me-2"></i>
-                  {name}
-                  {role === "admin" && (
-                    <span className="badge bg-danger ms-2">ADMIN</span>
-                  )}
-                </li>
-              )}
-
-              <li className="nav-item ms-2">
-                <button
-                  className="btn btn-outline-light btn-sm"
-                  onClick={() => {
-                    localStorage.clear();
-                    window.location.href = "/";
-                  }}
-                >
-                  Logout
-                </button>
-              </li>
-            </ul>
-          </div>
-        </nav>
-      </header>
-
-      {/* 🔹 CREATE PROGRAM FORM */}
-      <main className="container py-5 flex-grow-1">
-        <div className="mx-auto" style={{ maxWidth: "650px" }}>
-          <div className="bg-secondary rounded-4 p-4 shadow-lg">
-            <h2 className="fw-bold mb-2 text-center">Post a Program</h2>
-            <p className="text-center text-light mb-4">
-              Your program will be visible after admin verification
-            </p>
-
-            <form onSubmit={handleSubmit} encType="multipart/form-data">
-              <div className="mb-3">
-                <label className="form-label">Program Title</label>
-                <input
-                  type="text"
-                  className="form-control bg-dark text-white border-secondary"
-                  value={title}
-                  onChange={(e) => setTitle(e.target.value)}
-                />
+      <main className="flex-grow-1 site-section">
+        <div className="container">
+          <div className="row justify-content-center">
+            <div className="col-lg-9 col-xl-8">
+              <div className="text-center mb-5">
+                <span className="section-eyebrow mb-3">Program publishing</span>
+                <h1 className="section-title mb-3">Post a program for review</h1>
+                <p className="section-text mb-0">
+                  Share the opportunity details below. Your program will appear after admin verification.
+                </p>
               </div>
 
-              <div className="mb-3">
-                <label className="form-label">Short Description</label>
-                <textarea
-                  className="form-control bg-dark text-white border-secondary"
-                  rows="2"
-                  value={shortDesc}
-                  onChange={(e) => setShortDesc(e.target.value)}
-                />
-              </div>
+              <div className="site-panel form-card">
+                <form onSubmit={handleSubmit} encType="multipart/form-data">
+                  <div className="row g-3">
+                    <div className="col-12">
+                      <label className="form-label fw-semibold">Program Title</label>
+                      <input
+                        type="text"
+                        name="title"
+                        className="form-control site-input"
+                        value={title}
+                        onChange={(e) => setTitle(e.target.value)}
+                        required
+                      />
+                    </div>
 
-              <div className="mb-3">
-                <label className="form-label">Detailed Description</label>
-                <textarea
-                  className="form-control bg-dark text-white border-secondary"
-                  rows="4"
-                  value={longDesc}
-                  onChange={(e) => setLongDesc(e.target.value)}
-                />
-              </div>
+                    <div className="col-12">
+                      <label className="form-label fw-semibold">Short Description</label>
+                      <textarea
+                        name="shortDesc"
+                        className="form-control site-textarea"
+                        rows="3"
+                        value={shortDesc}
+                        onChange={(e) => setShortDesc(e.target.value)}
+                        required
+                      />
+                    </div>
 
-              <div className="mb-4">
-                <label className="form-label">Upload Program Image</label>
-                <input
-                  type="file"
-                  className="form-control bg-dark text-white border-secondary"
-                  onChange={(e) => setImage(e.target.files[0])}
-                />
-              </div>
+                    <div className="col-md-6">
+                      <label className="form-label fw-semibold">Category</label>
+                      <select
+                        name="category"
+                        className="form-select site-select"
+                        value={category}
+                        onChange={(e) => setCategory(e.target.value)}
+                        required
+                      >
+                        {PROGRAM_CATEGORIES.map((categoryOption) => (
+                          <option key={categoryOption} value={categoryOption}>
+                            {categoryOption}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
 
-              <div className="d-grid">
-                <button className="btn btn-primary fw-bold">
-                  Submit for Verification
-                </button>
+                    <div className="col-md-6">
+                      <label className="form-label fw-semibold">Location</label>
+                      <input
+                        type="text"
+                        name="location"
+                        className="form-control site-input"
+                        value={location}
+                        onChange={(e) => setLocation(e.target.value)}
+                        placeholder="Enter city name"
+                        required
+                      />
+                    </div>
+
+                    <div className="col-md-6">
+                      <label className="form-label fw-semibold">Required Volunteers</label>
+                      <input
+                        type="number"
+                        min="1"
+                        name="requiredVolunteers"
+                        className="form-control site-input"
+                        value={requiredVolunteers}
+                        onChange={(e) => setRequiredVolunteers(e.target.value)}
+                        required
+                      />
+                    </div>
+
+                    <div className="col-md-6">
+                      <label className="form-label fw-semibold">Upload Program Image</label>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        className="form-control site-input"
+                        onChange={(e) => setImage(e.target.files?.[0] || null)}
+                        required
+                      />
+                    </div>
+
+                    <div className="col-md-6">
+                      <label className="form-label fw-semibold">Start Date</label>
+                      <input
+                        type="date"
+                        name="startDate"
+                        className="form-control site-input"
+                        value={startDate}
+                        onChange={(e) => setStartDate(e.target.value)}
+                        required
+                      />
+                    </div>
+
+                    <div className="col-md-6">
+                      <label className="form-label fw-semibold">End Date</label>
+                      <input
+                        type="date"
+                        name="endDate"
+                        className="form-control site-input"
+                        value={endDate}
+                        onChange={(e) => setEndDate(e.target.value)}
+                      />
+                    </div>
+
+                    <div className="col-md-6">
+                      <label className="form-label fw-semibold">Start Time</label>
+                      <input
+                        type="time"
+                        name="startTime"
+                        className="form-control site-input"
+                        value={startTime}
+                        onChange={(e) => setStartTime(e.target.value)}
+                        required
+                      />
+                    </div>
+
+                    <div className="col-md-6">
+                      <label className="form-label fw-semibold">End Time</label>
+                      <input
+                        type="time"
+                        name="endTime"
+                        className="form-control site-input"
+                        value={endTime}
+                        onChange={(e) => setEndTime(e.target.value)}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="d-grid mt-4">
+                    <button className="btn btn-primary site-button">Submit for Verification</button>
+                  </div>
+                </form>
               </div>
-            </form>
+            </div>
           </div>
         </div>
       </main>
 
-      {/* 🔹 FOOTER */}
-      <footer className="text-center text-secondary py-4 mt-auto">
-        © 2025 VolunteerConnect. All rights reserved.
-      </footer>
+      <SiteFooter />
     </div>
   );
 };
