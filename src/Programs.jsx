@@ -1,17 +1,18 @@
-import React, { useState, useEffect } from "react";
-import "bootstrap/dist/css/bootstrap.min.css";
-import * as bootstrap from "bootstrap";
-import { Link, useLocation } from "react-router-dom";
+import React, { useEffect, useMemo, useState } from "react";
+import { FiFilter, FiMapPin, FiSearch } from "react-icons/fi";
+import SiteNavbar from "./components/SiteNavbar";
+import SiteFooter from "./components/SiteFooter";
+import ProgramCard from "./components/ProgramCard";
+import { getProgramCategory, getProgramLocation } from "./utils/programMeta";
 
 const Programs = () => {
-  const location = useLocation();
-  const [selectedProgram, setSelectedProgram] = useState(null);
   const [programs, setPrograms] = useState([]);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [locationFilter, setLocationFilter] = useState("All Locations");
+  const [categoryFilter, setCategoryFilter] = useState("All Categories");
 
-  const name = localStorage.getItem("name");
   const role = localStorage.getItem("role");
 
-  // Fetch programs
   useEffect(() => {
     fetch("http://localhost:5000/api/program")
       .then((res) => res.json())
@@ -19,202 +20,118 @@ const Programs = () => {
       .catch((err) => console.error("Error fetching programs:", err));
   }, []);
 
-  // Delete program (ADMIN)
   const handleDelete = async (id) => {
     if (!window.confirm("Are you sure you want to delete this program?")) return;
 
-    const res = await fetch(
-      `http://localhost:5000/api/program/delete/${id}`,
-      { method: "DELETE" }
-    );
+    const res = await fetch(`http://localhost:5000/api/program/delete/${id}`, {
+      method: "DELETE",
+    });
 
     const data = await res.json();
     alert(data.message);
-    setPrograms(programs.filter((p) => p._id !== id));
+    setPrograms((prev) => prev.filter((program) => program._id !== id));
   };
 
-  // Modal logic
-  useEffect(() => {
-    if (selectedProgram) {
-      const modal = new bootstrap.Modal(
-        document.getElementById("programModal")
-      );
-      modal.show();
-      return () => modal.hide();
-    }
-  }, [selectedProgram]);
+  const categoryOptions = useMemo(() => {
+    const categories = programs.map(getProgramCategory).filter(Boolean);
+    return ["All Categories", ...new Set(categories)];
+  }, [programs]);
+
+  const locationOptions = useMemo(() => {
+    const locations = programs.map(getProgramLocation).filter(Boolean);
+    return ["All Locations", ...new Set(locations)];
+  }, [programs]);
+
+  const filteredPrograms = useMemo(() => {
+    return programs.filter((program) => {
+      const category = getProgramCategory(program);
+      const location = getProgramLocation(program);
+      const matchesSearch = program.title.toLowerCase().includes(searchTerm.toLowerCase());
+      const matchesLocation = locationFilter === "All Locations" || location === locationFilter;
+      const matchesCategory = categoryFilter === "All Categories" || category === categoryFilter;
+
+      return matchesSearch && matchesLocation && matchesCategory;
+    });
+  }, [programs, searchTerm, locationFilter, categoryFilter]);
 
   return (
-    <div className="d-flex flex-column min-vh-100 bg-dark text-white" style={{ fontFamily: 'Inter, "Noto Sans", sans-serif' }}>
-      
-      {/* ================= NAVBAR ================= */}
-      <header className="border-bottom border-secondary bg-dark">
-        <nav className="navbar navbar-expand-md navbar-dark container px-3">
-          <Link to="/" className="navbar-brand fw-bold fs-4 text-white">
-            VolunteerConnect
-          </Link>
+    <div className="page-shell">
+      <SiteNavbar />
 
-          <button
-            className="navbar-toggler"
-            data-bs-toggle="collapse"
-            data-bs-target="#navbarNav"
-          >
-            <span className="navbar-toggler-icon"></span>
-          </button>
-
-          <div className="collapse navbar-collapse justify-content-end" id="navbarNav">
-            <ul className="navbar-nav align-items-center gap-md-3">
-              
-              <li className="nav-item">
-                <Link className={`nav-link ${location.pathname === "/" ? "active-link" : ""}`} to="/">Home</Link>
-              </li>
-
-              <li className="nav-item">
-                <Link className={`nav-link ${location.pathname === "/programs" ? "active-link" : ""}`} to="/programs">
-                  Programs
-                </Link>
-              </li>
-
-              <li className="nav-item">
-                <Link className="nav-link" to="/contact">Contact</Link>
-              </li>
-
-              {/* NOT LOGGED IN */}
-              {!role && (
-                <>
-                  <li className="nav-item">
-                    <Link className="nav-link" to="/login">
-                      <i className="bi bi-person-circle me-1"></i>Login
-                    </Link>
-                  </li>
-                  <li className="nav-item">
-                    <Link className="nav-link" to="/register">
-                      <i className="bi bi-person-plus me-1"></i>Register
-                    </Link>
-                  </li>
-                </>
-              )}
-
-              {/* LOGGED IN */}
-              {role && (
-  <>
-    <li className="nav-item">
-      <Link className="nav-link" to="/create-program">
-        <i className="bi bi-plus-circle me-1"></i>
-        Post Program
-      </Link>
-    </li>
-
-    <li className="nav-item d-flex align-items-center text-white">
-      <i className="bi bi-person-check me-2"></i>
-      {name}
-    </li>
-
-    {role === "admin" && (
-      <li className="nav-item">
-        <Link className="nav-link text-white fw-medium" to="/admin">
-          <i className="bi bi-shield-lock me-1"></i>
-          Admin Dashboard
-        </Link>
-      </li>
-    )}
-
-    <li className="nav-item">
-      <button
-        className="btn btn-outline-light btn-sm"
-        onClick={() => {
-          localStorage.clear();
-          window.location.href = "/";
-        }}
-      >
-        <i className="bi bi-box-arrow-right me-1"></i>
-        Logout
-      </button>
-    </li>
-  </>
-)}
-
-            </ul>
+      <main className="flex-grow-1 site-section">
+        <div className="container">
+          <div className="text-center mb-5">
+            <span className="section-eyebrow mb-3">Verified opportunities</span>
+            <h1 className="section-title mb-3">Internship and Volunteer Programs</h1>
+            <p className="section-text mx-auto mb-0" style={{ maxWidth: "42rem" }}>
+              Explore current opportunities, browse by focus area, and apply to meaningful programs that match your
+              interests.
+            </p>
           </div>
-        </nav>
-      </header>
 
-      {/* ================= PROGRAM LIST ================= */}
-      <main className="container py-5 flex-grow-1">
-        <div className="text-center mb-5">
-          <h1 className="fw-bold">Internship and Volunteer Programs</h1>
-          <p className="text-secondary">
-            Explore verified programs and contribute to meaningful causes.
-          </p>
-        </div>
-
-        <div className="row g-4">
-          {programs.map((program) => (
-            <div key={program._id} className="col-12">
-              <div className="d-flex flex-column flex-md-row bg-secondary rounded-4 overflow-hidden shadow">
-
-                <div className="p-4 flex-grow-1">
-                  <h5 className="fw-bold">{program.title}</h5>
-                  <p className="text-light">{program.shortDesc}</p>
-
-                  <div className="d-flex gap-2">
-                    <button
-                      className="btn btn-dark btn-sm"
-                      onClick={() => setSelectedProgram(program)}
-                    >
-                      View Details
-                    </button>
-
-                    {role === "admin" && (
-                      <button
-                        className="btn btn-danger btn-sm"
-                        onClick={() => handleDelete(program._id)}
-                      >
-                        Delete
-                      </button>
-                    )}
-                  </div>
-                </div>
-
-                <div className="col-md-4 p-0">
-                  <img
-                    src={`http://localhost:5000/uploads/programs/${program.image}`}
-                    alt={program.title}
-                    className="img-fluid h-100 w-100"
-                    style={{ objectFit: "cover" }}
+          <div className="search-panel site-panel mb-5">
+            <div className="row g-3">
+              <div className="col-lg-5">
+                <div className="search-input-group">
+                  <FiSearch size={18} />
+                  <input
+                    type="text"
+                    className="form-control site-input"
+                    placeholder="Search Programs"
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
                   />
                 </div>
-
+              </div>
+              <div className="col-md-6 col-lg-4">
+                <div className="search-input-group">
+                  <FiMapPin size={18} />
+                  <select
+                    className="form-select site-select"
+                    value={locationFilter}
+                    onChange={(e) => setLocationFilter(e.target.value)}
+                  >
+                    {locationOptions.map((option) => (
+                      <option key={option}>{option}</option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+              <div className="col-md-6 col-lg-3">
+                <div className="search-input-group">
+                  <FiFilter size={18} />
+                  <select
+                    className="form-select site-select"
+                    value={categoryFilter}
+                    onChange={(e) => setCategoryFilter(e.target.value)}
+                  >
+                    {categoryOptions.map((option) => (
+                      <option key={option}>{option}</option>
+                    ))}
+                  </select>
+                </div>
               </div>
             </div>
-          ))}
+          </div>
+
+          <div className="row g-4">
+            {filteredPrograms.map((program) => (
+              <div key={program._id} className="col-md-6 col-xl-4">
+                <ProgramCard program={program} onDelete={handleDelete} isAdmin={role === "admin"} />
+              </div>
+            ))}
+          </div>
+
+          {filteredPrograms.length === 0 && (
+            <div className="site-panel p-4 text-center mt-4">
+              <h2 className="h4 fw-bold">No programs found</h2>
+              <p className="muted-text mb-0">Try adjusting the search text or filters to explore more opportunities.</p>
+            </div>
+          )}
         </div>
       </main>
 
-      {/* ================= MODAL ================= */}
-      <div className="modal fade" id="programModal" tabIndex="-1">
-        <div className="modal-dialog modal-lg modal-dialog-centered">
-          <div className="modal-content bg-dark text-white">
-            <div className="modal-header border-secondary">
-              <h5 className="modal-title">{selectedProgram?.title}</h5>
-              <button className="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-            </div>
-            <div className="modal-body">
-              <img
-                src={`http://localhost:5000/uploads/programs/${selectedProgram?.image}`}
-                className="img-fluid rounded mb-3"
-                alt=""
-              />
-              <p>{selectedProgram?.longDesc}</p>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* ================= FOOTER ================= */}
-      <footer className="text-center text-secondary py-4 mt-auto">
-        © 2025 VolunteerConnect. All rights reserved.
-      </footer>
+      <SiteFooter />
     </div>
   );
 };
