@@ -1,6 +1,9 @@
 import React, { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
-import "bootstrap/dist/css/bootstrap.min.css";
+import { Link, useNavigate } from "react-router-dom";
+import loginVolunteer from "./assets/login-volunteer.jpg";
+import AuthSplitLayout from "./components/AuthSplitLayout";
+import SiteFooter from "./components/SiteFooter";
+import SiteNavbar from "./components/SiteNavbar";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -10,99 +13,91 @@ const Login = () => {
   const [error, setError] = useState("");
 
   const handleLogin = async (e) => {
-  e.preventDefault();
+    e.preventDefault();
+    setError("");
 
-  try {
-    const response = await fetch(
-      "http://localhost:5000/api/auth/login",
-      {
+    try {
+      const response = await fetch("http://localhost:5000/api/auth/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({ phone, password }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        alert(data.message);
+        return;
       }
-    );
 
-    const data = await response.json();
+      localStorage.setItem("userId", data.user.id);
+      localStorage.setItem("name", data.user.name);
+      localStorage.setItem("phone", data.user.phone);
+      localStorage.setItem("role", data.user.role);
 
-    if (!response.ok) {
-      alert(data.message);
-      return;
+      alert("Login successful");
+      navigate("/");
+    } catch (loginError) {
+      console.error("Login error:", loginError);
+      setError("Server error. Please try again.");
     }
-
-    // ✅ Save login info
-    localStorage.setItem("userId", data.user.id);
-    localStorage.setItem("name", data.user.name);
-    localStorage.setItem("phone", data.user.phone);
-    localStorage.setItem("role", data.user.role);
-
-    alert("Login successful");
-    navigate("/");
-  } catch (error) {
-    console.error("Login error:", error);
-    alert("Server error. Please try again.");
-  }
-};
-
+  };
 
   return (
-    <div
-      className="d-flex justify-content-center align-items-center min-vh-100 text-white"
-      style={{
-        background:
-          'linear-gradient(rgba(0,0,0,0.75), rgba(0,0,0,0.85)), url("https://st4.depositphotos.com/16122460/29031/i/450/depositphotos_290310662-stock-photo-team-of-volunteers-in-uniform.jpg")',
-        backgroundSize: "cover",
-        backgroundPosition: "center",
-        fontFamily: 'Inter, "Noto Sans", sans-serif',
-      }}
-    >
-      <div
-        className="bg-dark border border-secondary rounded-4 p-4 shadow-lg"
-        style={{ width: "400px" }}
-      >
-        <h2 className="text-center fw-bold mb-2">Welcome Back</h2>
-        <p className="text-center text-secondary mb-4">
-          Login to continue to VolunteerConnect
-        </p>
+    <div className="page-shell">
+      <SiteNavbar />
 
-        {error && <div className="alert alert-danger">{error}</div>}
+      <main className="flex-grow-1">
+        <AuthSplitLayout
+          image={loginVolunteer}
+          imageClassName="login-image"
+          title="Login to continue"
+          subtitle="Access verified programs, manage applications, and keep track of your activity."
+          quote='"The best way to find yourself is to lose yourself in the service of others."'
+          quoteAuthor="- Mahatma Gandhi"
+        >
+          {error && <div className="alert alert-danger rounded-4">{error}</div>}
 
-        <form onSubmit={handleLogin}>
-          <div className="mb-3">
-            <label className="form-label text-light">Phone Number</label>
-            <input
-              type="text"
-              className="form-control bg-secondary text-white border-0"
-              value={phone}
-              onChange={(e) => setPhone(e.target.value)}
-              required
-            />
+          <form onSubmit={handleLogin}>
+            <div className="mb-3">
+              <label className="form-label fw-semibold">Phone Number</label>
+              <input
+                type="text"
+                className="form-control site-input"
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
+                required
+              />
+            </div>
+
+            <div className="mb-3">
+              <label className="form-label fw-semibold">Password</label>
+              <input
+                type="password"
+                className="form-control site-input"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+              />
+            </div>
+
+            <button type="submit" className="btn btn-primary site-button w-100 mt-3">
+              Login
+            </button>
+          </form>
+
+          <div className="text-center mt-4">
+            <span className="muted-text">New user? </span>
+            <Link to="/register" className="auth-link">
+              Register here
+            </Link>
           </div>
+        </AuthSplitLayout>
+      </main>
 
-          <div className="mb-3">
-            <label className="form-label text-light">Password</label>
-            <input
-              type="password"
-              className="form-control bg-secondary text-white border-0"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-            />
-          </div>
-
-          <button type="submit" className="btn btn-primary w-100 fw-bold mt-2">
-            Login
-          </button>
-        </form>
-
-        <div className="text-center mt-3">
-          <span className="text-secondary">New user?</span>{" "}
-          <Link to="/register" className="text-info text-decoration-none fw-medium">
-            Register here
-          </Link>
-        </div>
-      </div>
+      <SiteFooter />
     </div>
   );
 };
