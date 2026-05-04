@@ -26,20 +26,17 @@
 ### ℹ️ About Page
 ![About](images/about.png)
 
-### 📋 Apply Form
-![Apply](images/apply.png)
-
 ### 📑 Program Listings
-![Programs](images/program.png)
+![Programs](images/programs.png)
 
 ### 📞 Contact Page
 ![Contact](images/contact.png)
 
-### 🔐 Admin Login
-![Admin Login](images/admin-login.png)
+### 🔐 Login
+![Login](images/login.png)
 
 ### 🧑‍💼 Admin Panel (Dashboard)
-![Admin Panel](images/adminpanel.png)
+![Admin Panel](images/admin.png)
 
 ### 🗃️ MongoDB Compass View
 ![MongoDB](images/MongoDB_Compass.png)
