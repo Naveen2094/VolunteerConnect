@@ -1,217 +1,118 @@
 import React from "react";
-import "bootstrap/dist/css/bootstrap.min.css";
-import "bootstrap/dist/js/bootstrap.bundle.min.js";
-import "./App.css";
-import { Link, useLocation } from "react-router-dom";
+import { Link } from "react-router-dom";
+import { FiArrowRight, FiAward, FiHeart, FiTrendingUp } from "react-icons/fi";
+import SiteNavbar from "./components/SiteNavbar";
+import SiteFooter from "./components/SiteFooter";
+
+const highlights = [
+  {
+    title: "Impactful Projects",
+    text: "Engage in projects that address real-world challenges and make a tangible difference in communities.",
+    icon: FiHeart,
+  },
+  {
+    title: "Community Support",
+    text: "Connect with like-minded individuals, mentors, and organizations that share your passion for service.",
+    icon: FiAward,
+  },
+  {
+    title: "Personal Growth",
+    text: "Develop new skills, gain valuable experience, and expand your network while contributing to causes you care about.",
+    icon: FiTrendingUp,
+  },
+];
 
 const Home = () => {
-  const location = useLocation();
-  const name = localStorage.getItem("name");
-  const role = localStorage.getItem("role");
-
-
   return (
-    <div className="d-flex flex-column min-vh-100 bg-dark text-white" style={{ fontFamily: 'Inter, "Noto Sans", sans-serif' }}>
-      {/* Navbar */}
-      <header className="border-bottom border-secondary bg-dark">
-        <nav className="navbar navbar-expand-md navbar-dark container px-3">
-          <Link to="/" className="navbar-brand d-flex align-items-center gap-2 text-white text-decoration-none">
-            <div style={{ width: 40, height: 40 }}>
-              <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" className="text-white">
-                <path d="M4 42.4379C4 42.4379 14.0962 36.0744 24 41.1692C35.0664 46.8624 44 42.2078 44 42.2078L44 7.01134C44 7.01134 35.068 11.6577 24.0031 5.96913C14.0971 0.876274 4 7.27094 4 7.27094L4 42.4379Z" fill="currentColor" />
-              </svg>
-            </div>
-            <span className="fw-bold fs-4">VolunteerConnect</span>
-          </Link>
+    <div className="page-shell">
+      <SiteNavbar />
 
-          <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-            <span className="navbar-toggler-icon"></span>
-          </button>
+      <main className="flex-grow-1">
+        <section className="hero-section">
+          <div
+            className="hero-backdrop"
+            style={{
+              backgroundImage:
+                'linear-gradient(135deg, rgba(34, 197, 94, 0.1), rgba(14, 165, 233, 0.08)), url("https://st4.depositphotos.com/16122460/29031/i/450/depositphotos_290310662-stock-photo-team-of-volunteers-in-uniform.jpg")',
+            }}
+          />
 
-          <div className="collapse navbar-collapse justify-content-end" id="navbarNav">
-            <ul className="navbar-nav align-items-center gap-md-3">
-  <li className="nav-item">
-    <Link className={`nav-link text-white fw-medium ${location.pathname === "/" ? "active-link" : ""}`} to="/">
-      Home
-    </Link>
-  </li>
+          <div className="container hero-content">
+            <div className="row align-items-center hero-grid g-5">
+              <div className="col-lg-7">
+                <span className="hero-pill mb-3">Volunteer opportunities that feel human</span>
+                <h1 className="section-title mb-3">Make a Difference with VolunteerConnect</h1>
+                <p className="section-text fs-5 mb-4" style={{ maxWidth: "42rem" }}>
+                  Join a community of passionate individuals dedicated to creating positive change through meaningful
+                  volunteer and internship opportunities.
+                </p>
+                <div className="d-flex flex-wrap gap-3">
+                  <Link to="/programs" className="btn btn-primary site-button px-4">
+                    <span>Explore Opportunities</span>
+                    <FiArrowRight size={18} />
+                  </Link>
+                  <Link to="/apply" className="btn btn-outline-secondary site-outline-button px-4">
+                    Start Your Journey
+                  </Link>
+                </div>
+              </div>
 
-  <li className="nav-item">
-    <Link className={`nav-link text-white fw-medium ${location.pathname === "/about" ? "active-link" : ""}`} to="/about">
-      About
-    </Link>
-  </li>
-
-  <li className="nav-item">
-    <Link className={`nav-link text-white fw-medium ${location.pathname === "/programs" ? "active-link" : ""}`} to="/programs">
-      Programs
-    </Link>
-  </li>
-
-  <li className="nav-item">
-    <Link className={`nav-link text-white fw-medium ${location.pathname === "/contact" ? "active-link" : ""}`} to="/contact">
-      Contact
-    </Link>
-  </li>
-
-  {/* 🔐 NOT LOGGED IN */}
-  {!role && (
-    <>
-      <li className="nav-item">
-        <Link className="nav-link text-white fw-medium" to="/login">
-          <i className="bi bi-person-circle me-1"></i>
-          Login
-        </Link>
-      </li>
-
-      <li className="nav-item">
-        <Link className="nav-link text-white fw-medium" to="/register">
-          <i className="bi bi-person-plus me-1"></i>
-          Register
-        </Link>
-      </li>
-    </>
-  )}
-
-  {/* ✅ LOGGED IN USER */}
-  {role && (
-  <>
-    {/* POST PROGRAM */}
-    <li className="nav-item">
-      <Link className="nav-link text-white fw-medium" to="/create-program">
-        <i className="bi bi-plus-circle me-1"></i>
-        Post Program
-      </Link>
-    </li>
-
-    {/* USER NAME */}
-    <li className="nav-item d-flex align-items-center text-white fw-medium">
-      <i className="bi bi-person-check me-2"></i>
-      {name}
-    </li>
-
-    {/* ADMIN DASHBOARD */}
-    {role === "admin" && (
-      <li className="nav-item">
-        <Link className="nav-link text-white fw-medium" to="/admin">
-          <i className="bi bi-shield-lock me-1"></i>
-          Admin Dashboard
-        </Link>
-      </li>
-    )}
-
-    {/* LOGOUT */}
-    <li className="nav-item ms-2">
-      <button
-        className="btn btn-outline-light fw-bold px-3"
-        onClick={() => {
-          localStorage.clear();
-          window.location.href = "/";
-        }}
-      >
-        <i className="bi bi-box-arrow-right me-1"></i>
-        Logout
-      </button>
-    </li>
-  </>
-)}
-
-</ul>
-
-            
-          </div>
-        </nav>
-      </header>
-
-      {/* Hero */}
-      <main
-        className="flex-grow-1 d-flex justify-content-center align-items-center px-3 py-5"
-        style={{
-          backgroundImage:
-            'linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.7)), url("https://st4.depositphotos.com/16122460/29031/i/450/depositphotos_290310662-stock-photo-team-of-volunteers-in-uniform.jpg")',
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-          backgroundRepeat: "no-repeat",
-          minHeight: "480px",
-        }}
-      >
-        <div className="text-center text-white" style={{ maxWidth: "720px" }}>
-          <h1 className="display-5 fw-bold mb-3">
-            Make a Difference with VolunteerConnect
-          </h1>
-          <p className="lead mb-4">
-            Join a community of passionate individuals dedicated to creating
-            positive change through meaningful volunteer and internship
-            opportunities.
-          </p>
-          <Link to="/programs" className="btn btn-primary btn-lg px-5">Explore Opportunities</Link>
-        </div>
-      </main>
-
-      {/* Why Choose Us */}
-      <section className="container py-5">
-        <div className="mb-4 text-center mx-auto" style={{ maxWidth: 720 }}>
-          <h2 className="fw-bold fs-2">Why Choose VolunteerConnect?</h2>
-          <p>
-            Discover the benefits of joining our program and how it can help you
-            grow personally and professionally.
-          </p>
-        </div>
-        <div className="row g-4">
-          {[
-            {
-              title: "Impactful Projects",
-              text: "Engage in projects that address real-world challenges and make a tangible difference in communities.",
-              icon: "🌍",
-            },
-            {
-              title: "Community Support",
-              text: "Connect with like-minded individuals, mentors, and organizations that share your passion for service.",
-              icon: "🤝",
-            },
-            {
-              title: "Personal Growth",
-              text: "Develop new skills, gain valuable experience, and expand your network while contributing to causes you care about.",
-              icon: "📈",
-            },
-          ].map((card, idx) => (
-            <div className="col-sm-6 col-md-4 fade-in-up" key={idx}>
-              <div className="card-hover bg-secondary text-white rounded p-4 h-100 d-flex flex-column gap-3 shadow-sm transition-all">
-                <div className="display-6">{card.icon}</div>
-                <h3 className="fw-bold fs-5">{card.title}</h3>
-                <p className="text-light">{card.text}</p>
+              <div className="col-lg-5 d-flex justify-content-lg-end">
+                <div className="hero-stat-card surface-card">
+                  <span className="section-eyebrow mb-3">Community impact</span>
+                  <strong>10,000+ Volunteer Hours</strong>
+                  <p className="muted-text mb-0">
+                    Supported through verified programs, service initiatives, and internship placements.
+                  </p>
+                </div>
               </div>
             </div>
-          ))}
-        </div>
-      </section>
+          </div>
+        </section>
 
-      {/* Call to Action */}
-      <section className="text-center text-white py-5 px-3" style={{ maxWidth: 720, margin: "0 auto" }}>
-        <h2 className="fw-bold fs-2 mb-3">Ready to Begin Your Journey?</h2>
-        <p className="mb-4">
-          Join VolunteerConnect today and start making a difference in the world.
-        </p>
-        <Link to="/apply" className="btn btn-primary btn-lg px-5">
-          Get Started
-        </Link>
+        <section className="site-section">
+          <div className="container">
+            <div className="text-center mx-auto mb-5" style={{ maxWidth: "46rem" }}>
+              <span className="section-eyebrow mb-3">Why choose us</span>
+              <h2 className="section-title mb-3">A platform built for impact, clarity, and connection</h2>
+              <p className="section-text mb-0">
+                Discover the benefits of joining our program and how it can help you grow personally and professionally.
+              </p>
+            </div>
 
-      </section>
+            <div className="row g-4">
+              {highlights.map(({ title, text, icon: Icon }) => (
+                <div className="col-md-4" key={title}>
+                  <div className="feature-card h-100">
+                    <div className="feature-icon-wrap mb-4">
+                      <Icon size={24} />
+                    </div>
+                    <h3 className="fw-bold h4 mb-3">{title}</h3>
+                    <p className="muted-text mb-0">{text}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
 
-      {/* Footer */}
-      <footer className="text-center text-secondary py-4 mt-auto">
-        <div className="d-flex flex-wrap justify-content-center gap-3 mb-3">
-          <a href="#" className="text-secondary text-decoration-none">Privacy Policy</a>
-          <a href="#" className="text-secondary text-decoration-none">Terms of Service</a>
-          <Link to="/contact" className="text-secondary text-decoration-none">Contact Us</Link>
-        </div>
-        <div className="d-flex justify-content-center gap-4 mb-3">
-          <a href="#" className="text-secondary" aria-label="Twitter">🐦</a>
-          <a href="#" className="text-secondary" aria-label="Facebook">📘</a>
-          <a href="#" className="text-secondary" aria-label="Instagram">📸</a>
-        </div>
-        <div>© 2025 VolunteerConnect. All rights reserved.</div>
-      </footer>
+        <section className="site-section pt-0">
+          <div className="container">
+            <div className="site-panel p-4 p-lg-5 text-center mx-auto" style={{ maxWidth: "52rem" }}>
+              <span className="section-eyebrow mb-3">Take the next step</span>
+              <h2 className="section-title mb-3">Ready to Begin Your Journey?</h2>
+              <p className="section-text fs-5 mb-4">
+                Join VolunteerConnect today and start making a difference in the world.
+              </p>
+              <Link to="/apply" className="btn btn-primary site-button px-5">
+                Get Started
+              </Link>
+            </div>
+          </div>
+        </section>
+      </main>
+
+      <SiteFooter />
     </div>
   );
 };
