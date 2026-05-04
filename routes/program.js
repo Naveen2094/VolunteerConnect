@@ -4,41 +4,53 @@ import Program from "../models/Program.js";
 
 const router = express.Router();
 
-/* =======================
-   MULTER CONFIG
-======================= */
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     cb(null, "uploads/programs");
   },
   filename: (req, file, cb) => {
-    cb(null, Date.now() + "-" + file.originalname);
+    cb(null, `${Date.now()}-${file.originalname}`);
   },
 });
 
 const upload = multer({ storage });
 
-/* =======================
-   USER – CREATE PROGRAM
-   Status: pending
-======================= */
 router.post("/create", upload.single("image"), async (req, res) => {
   try {
-    console.log("📦 BODY:", req.body);
-    console.log("🖼 FILE:", req.file);
+    console.log("Program create body:", req.body);
 
-    const { title, shortDesc, longDesc, createdBy } = req.body;
+    const {
+      title,
+      shortDesc,
+      category,
+      location,
+      requiredVolunteers,
+      startDate,
+      endDate,
+      startTime,
+      endTime,
+      createdBy,
+    } = req.body;
 
-    if (!title || !shortDesc || !longDesc || !createdBy) {
-      return res.status(400).json({ message: "All fields required" });
+    if (!title || !shortDesc || !category || !location || !requiredVolunteers || !startDate || !startTime) {
+      return res.status(400).json({
+        message: "All required fields must be filled",
+      });
     }
 
     const program = new Program({
       title,
       shortDesc,
-      longDesc,
-      image: req.file ? req.file.filename : null,
-      status: "pending",
+      category,
+      location,
+      requiredVolunteers,
+      currentVolunteers: 0,
+      startDate,
+      endDate,
+      startTime,
+      endTime,
+      image: req.file?.filename,
+      status: "created",
       createdBy,
     });
 
@@ -46,17 +58,23 @@ router.post("/create", upload.single("image"), async (req, res) => {
 
     res.status(201).json({
       message: "Program submitted for admin verification",
+      program,
     });
   } catch (err) {
-    console.error("❌ CREATE PROGRAM ERROR:", err);
+    console.error("CREATE PROGRAM ERROR:", err);
     res.status(500).json({ message: "Server error" });
   }
 });
 
+router.get("/user/:name", async (req, res) => {
+  try {
+    const programs = await Program.find({ createdBy: req.params.name }).sort({ createdAt: -1 });
+    res.json(programs);
+  } catch (err) {
+    res.status(500).json({ message: "Server error" });
+  }
+});
 
-/* =======================
-   ADMIN – VIEW ALL PROGRAMS
-======================= */
 router.get("/admin/all", async (req, res) => {
   try {
     const programs = await Program.find().sort({ createdAt: -1 });
@@ -66,65 +84,43 @@ router.get("/admin/all", async (req, res) => {
   }
 });
 
-/* =======================
-   ADMIN – APPROVE PROGRAM
-======================= */
 router.put("/approve/:id", async (req, res) => {
   try {
-    const program = await Program.findByIdAndUpdate(
-      req.params.id,
-      { status: "approved" },
-      { new: true }
-    );
+    const program = await Program.findByIdAndUpdate(req.params.id, { status: "verified" }, { new: true });
 
     if (!program) {
       return res.status(404).json({ message: "Program not found" });
     }
 
-    res.json({ message: "Program approved successfully" });
+    res.json({ message: "Program approved successfully", program });
   } catch (err) {
     res.status(500).json({ message: "Server error" });
   }
 });
 
-/* =======================
-   ADMIN – REJECT PROGRAM
-======================= */
 router.put("/reject/:id", async (req, res) => {
   try {
-    const program = await Program.findByIdAndUpdate(
-      req.params.id,
-      { status: "rejected" },
-      { new: true }
-    );
+    const program = await Program.findByIdAndUpdate(req.params.id, { status: "rejected" }, { new: true });
 
     if (!program) {
       return res.status(404).json({ message: "Program not found" });
     }
 
-    res.json({ message: "Program rejected successfully" });
+    res.json({ message: "Program rejected successfully", program });
   } catch (err) {
     res.status(500).json({ message: "Server error" });
   }
 });
 
-/* =======================
-   PUBLIC – VIEW APPROVED PROGRAMS ONLY
-======================= */
 router.get("/", async (req, res) => {
   try {
-    const programs = await Program.find({ status: "approved" }).sort({
-      createdAt: -1,
-    });
+    const programs = await Program.find({ status: { $in: ["verified", "closed", "approved"] } }).sort({ createdAt: -1 });
     res.json(programs);
   } catch (err) {
     res.status(500).json({ message: "Server error" });
   }
 });
 
-/* =======================
-   ADMIN – DELETE PROGRAM
-======================= */
 router.delete("/delete/:id", async (req, res) => {
   try {
     const program = await Program.findByIdAndDelete(req.params.id);
